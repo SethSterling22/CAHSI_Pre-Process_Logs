@@ -17,7 +17,7 @@ CAHSI/
 ├── CAHSI_Pre-Process_Logs/
 │   ├── Converter/
 │   │   ├── Results/            # CSVs and generated Scores
-│   │   ├── prep_wuil.py        # Cleaning and injection Scripts
+│   │   ├── convert_to_midas.py        # Cleaning and injection Scripts
 │   │   └── view_results.ipynb  # Visualization and metrics
 |   |
 │   ├── MIDAS/                  # C++ code with MIDAS algorithm
@@ -61,7 +61,7 @@ Turn WUIL `.txt` files to `.csv` compatibles with graphs (source, destination, t
 # Execute cleaning and injection script script
 cd Converter
 
-python3 prep_wuil.py
+python3 convert_to_midas.py
 
 ```
 

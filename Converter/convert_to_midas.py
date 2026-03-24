@@ -1,66 +1,131 @@
-import datetime
-import sys
+# Created by Sebastián H. Sterling
+
+
+############################### Hashed Version ###############################
+import pandas as pd
 import os
+import zlib
 
-# Diccionarios para mapear nodos si no son numéricos (opcional, pero recomendado)
-node_map = {}
-next_id = 0
+def prepare_user_data(user_path, output_name):
+    output_dir = "Results"
+    if not os.path.exists(output_dir): os.makedirs(output_dir)
 
-
-def get_node_id(node_str):
-    global next_id
-    if node_str not in node_map:
-        node_map[node_str] = next_id
-        next_id += 1
-    return node_map[node_str]
-
-
-
-def convert(input_file):
-    file_name_only = os.path.splitext(os.path.basename(input_file))[0]
-    output_file = f"midas_{file_name_only}_input.csv"
-    with open(input_file, 'r') as f, open(output_file, 'w') as out:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-
-            parts = line.split('|')
-            if len(parts) < 5:
-                continue
-
-            # 1. Extraer Nodos (Source y Destination)
-            # Si ya son números y quieres mantenerlos, quita el get_node_id
-            src = parts[3] 
-            dest = parts[4]
-
-            # 2. Procesar Timestamp
-            # Combinamos fecha y hora. Limpiamos 'p.m.' para que Python lo entienda
-            date_str = parts[1]
-            time_str = parts[2].replace('p.m.', 'PM').replace('a.m.', 'AM')
-            full_time = f"{date_str} {time_str}"
-
-            try:
-                dt = datetime.datetime.strptime(full_time, "%d/%m/%Y %H:%M:%S %p")
-                # Convertimos a Unix Timestamp (segundos totales)
-                timestamp = int(dt.timestamp())
-            except ValueError:
-                # Si el formato de hora falla, intentamos sin AM/PM
+    all_events = []
+    # 1. Walk through the directory structure to collect log files
+    for root, dirs, files in os.walk(user_path):
+        for file in files:
+            if file.endswith('.txt'):
+                # ATTACK INJECTION SECTION: Label is 1 if 'Attack' is in the folder path, otherwise 0
+                label = 1 if 'Attack' in root else 0
                 try:
-                    dt = datetime.datetime.strptime(f"{date_str} {parts[2]}", "%d/%m/%Y %H:%M:%S")
-                    timestamp = int(dt.timestamp())
-                except:
-                    continue
+                    # Using '|' as the separator based in WUIL log format
+                    df = pd.read_csv(os.path.join(root, file), sep='|', header=None, on_bad_lines='skip')
+                    df['label'] = label
+                    all_events.append(df)
+                except Exception as e:
+                    print(f"Error loading {file}: {e}")
 
-            # 3. Escribir al archivo final (formato: src,dest,timestamp)
-            out.write(f"{src},{dest},{timestamp}\n")
+    if not all_events: return
+    df_total = pd.concat(all_events)
 
-    print(f"Conversión completada. Archivo guardado como: {output_file}")
+    # --- 2. Time Cleaning (Unix Epoch) ---
+    # Standardizing time by removing p.m./a.m. and parsing correctly
+    time_clean = df_total[2].astype(str).str.replace('p.m.', '', regex=False).str.replace('a.m.', '', regex=False).str.strip()
+    df_total['dt'] = pd.to_datetime(df_total[1] + ' ' + time_clean, format='%d/%m/%Y %H:%M:%S', errors='coerce')
+    
+    # Critical step: Sort events chronologically to simulate a real-time stream
+    df_total = df_total.dropna(subset=['dt']).sort_values('dt')
+    df_total['ts_unix'] = (df_total['dt'].astype('int64') // 10**9).astype(int)
+
+    # --- 3. Deterministic Hashing (Uniqueness Solution) ---
+    # We hash the full path string to ensure '0\1\2\3\4' is a unique node ID
+    def string_to_int_hash(s):
+        return zlib.crc32(str(s).encode('utf-8')) & 0xffffffff
+
+    # src: UserID (Col 4) | dst: Full Path (Col 5)
+    df_total['src_id'] = df_total[4].apply(string_to_int_hash)
+    df_total['dst_id'] = df_total[5].apply(string_to_int_hash)
+
+    # --- 4. Export to MIDAS Format ---
+    midas_final = df_total[['src_id', 'dst_id', 'ts_unix']]
+    midas_final.to_csv(f"{output_dir}/{output_name}_data.csv", index=False, header=False)
+    df_total['label'].to_csv(f"{output_dir}/{output_name}_labels.csv", index=False, header=False)
+    
+    with open(f"{output_dir}/{output_name}_meta.txt", 'w') as f:
+        f.write(str(len(midas_final)))
+
+    print(f"✅ {output_name} processed with Deterministic Hashing.")
+    print(f"Total Attacks Tagged: {df_total['label'].sum()}")
 
 
-def main():
-    input_file = sys.argv[1]
-    convert(input_file)
+# Run for Users
+prepare_user_data('../../WUIL_Logs/User4/', 'user1')
+prepare_user_data('../../WUIL_Logs/User4/', 'user2')
+prepare_user_data('../../WUIL_Logs/User4/', 'user3')
+prepare_user_data('../../WUIL_Logs/User4/', 'user4')
+prepare_user_data('../../WUIL_Logs/User5/', 'user5')
+prepare_user_data('../../WUIL_Logs/User6/', 'user6')
+prepare_user_data('../../WUIL_Logs/User7/', 'user7')
+prepare_user_data('../../WUIL_Logs/User7/', 'user8')
+prepare_user_data('../../WUIL_Logs/User7/', 'user9')
+prepare_user_data('../../WUIL_Logs/User7/', 'user10')
 
-if __name__ == "__main__":
-    main()
+
+############################### Underscore Version ###############################
+# import pandas as pd
+# import os
+
+# def prepare_user_data(user_path, output_name):
+#     output_dir = "Results"
+#     if not os.path.exists(output_dir): os.makedirs(output_dir)
+
+#     all_events = []
+#     for root, dirs, files in os.walk(user_path):
+#         for file in files:
+#             if file.endswith('.txt'):
+#                 label = 1 if 'Attack' in root else 0
+#                 # Use the '|' separator found in your logs
+#                 df = pd.read_csv(os.path.join(root, file), sep='|', header=None, on_bad_lines='skip')
+#                 df['label'] = label
+#                 all_events.append(df)
+
+#     if not all_events: return
+#     df_total = pd.concat(all_events)
+
+#     # ######## 1. Time Cleaning ########
+#     # Your logs contain "13:46:06 p.m.". The "p.m." is redundant if it's 24h format.
+#     # We remove it and parse using an explicit format.
+#     time_clean = df_total[2].astype(str).str.replace('p.m.', '', regex=False).str.replace('a.m.', '', regex=False).str.strip()
+    
+#     # Explicit format to avoid UserWarning and calculation errors
+#     df_total['dt'] = pd.to_datetime(df_total[1] + ' ' + time_clean, format='%d/%m/%Y %H:%M:%S', errors='coerce')
+#     df_total = df_total.dropna(subset=['dt']).sort_values('dt')
+    
+#     # Real Unix Epoch (Seconds since 1970)
+#     df_total['ts_unix'] = (df_total['dt'].astype('int64') // 10**9).astype(int)
+
+#     # ######## 2. Node Factorization (Ensures variability) ########
+#     # src: Column 3 (User ID in the log)
+#     # dest: Column 5 (Full path)
+#     df_total['src_id'], _ = pd.factorize(df_total[3])
+#     df_total['dst_id'], _ = pd.factorize(df_total[5])
+
+#     # ######## 3. Export ########
+#     midas_final = df_total[['src_id', 'dst_id', 'ts_unix']]
+#     midas_final.to_csv(f"{output_dir}/{output_name}_data.csv", index=False, header=False)
+#     df_total['label'].to_csv(f"{output_dir}/{output_name}_labels.csv", index=False, header=False)
+    
+#     # Meta file with the total record count
+#     with open(f"{output_dir}/{output_name}_meta.txt", 'w') as f:
+#         f.write(str(len(midas_final)))
+
+#     print(f"✅ {output_name} processed.")
+#     print(f"ID Sample (variability check!):")
+#     print(midas_final.head(5).values.tolist())
+    
+#     # Attack verification
+#     print(f"Attacks found: {df_total['label'].sum()} out of {len(df_total)} records.")
+
+# prepare_user_data('../../WUIL_Logs/User5/', 'user5')
+# prepare_user_data('../../WUIL_Logs/User6/', 'user6')
+# prepare_user_data('../../WUIL_Logs/User7/', 'user7')
