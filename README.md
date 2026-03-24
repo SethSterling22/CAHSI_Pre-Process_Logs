@@ -127,10 +127,17 @@ jupyter notebook Analisis.ipynb
 
 ## ARES: Anomaly Recognition Model For Edge Streams
 
-This repository contains the implementation of **ARES**, an advanced model for detecting anomalies in dynamic graph flows that combines Graph Neural Networks (GNN) with Half-Space Trees (HST).
+This repository contains the implementation of **[ARES](https://anonymous.4open.science/r/ARES-4573/README.md)**, an advanced model for detecting anomalies in dynamic graph flows that combines Graph Neural Networks (GNN) with Half-Space Trees (HST).
 
+## Project Structure
 
+* **`main.py`**: Principal execution script.
+* **`config/`**: Contain JSON files with the hyperparameters from each dataset.
+* **`checkpoints/`**: Storage the pre-trained models (`.pt`).
+* **`vfhst.py`**: Implementation of the Versatile Fast Half-Space Tree.
+* **`data/`**: Folder for raw data files.
 
+---
 ### Pre-Requisites
 
 * Python 3.10 or upper.
@@ -140,14 +147,12 @@ This repository contains the implementation of **ARES**, an advanced model for d
 Use python3 standar `venv`:
 
 ```bash
-# Create "ares_env"
 python3 -m venv ares_env
 ```
 
 ### 2. Activate virtual environment
 
 + In Linux o macOS:
-
 ```Bash
 source ares_env/bin/activate
 ```
@@ -162,7 +167,7 @@ Once the environment is activated, update pip and install the essential librarie
 
 ```bash
 pip install --upgrade pip
-pip install numpy pandas scikit-learn tqdm matplotlib
+pip install -r requirements.txt
 ```
 
 ### 4. Install PyTorch and PyTorch Geometric (PyG)
@@ -173,21 +178,23 @@ pip install torch torchvision torchaudio
 pip install torch_geometric
 ```
 
-#### Installation of PyG auxiliary dependencies
-
-```bash
-pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f [https://data.pyg.org/whl/torch-$(python](https://data.pyg.org/whl/torch-$(python) -c "import torch; print(torch.__version__)").html
-```
 
 #### Application Execution
 + **Data Preparation:** The script will automatically download the datasets (Wikipedia/Reddit) the first time it runs. Make sure you have enough disk space.
 
-#### Train and Evaluate the Model
-To run the base experiment with the Wikipedia dataset, use the following command:
+#### Standard execution
+To run the model with the UNSW-NB15 (Cybersecurity) dataset
 
 ```bash
-python main.py --dataset wikipedia --epochs 50 --use_gnn True --n_trees 25
+python main.py config/GAE_UNSW-NB15.json
 ```
+
+#### Real-time adaptation
+For scenarios with concept drift (change in network behavior), use the update configurations:
+```bash
+python main.py config/GAE_UNSW-NB15_updateHST.json
+```
+
 
 
 ---

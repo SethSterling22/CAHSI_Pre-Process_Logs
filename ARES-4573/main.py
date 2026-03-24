@@ -18,7 +18,7 @@ os.environ['CUDA_VISIBLE_DEVICES']= "{}".format(str(params.GPU))
 import torch
 
 from pipeline import pipeline_validation, pipeline_test
-from utils import preprocess_dataset, save_unsw, save_ctu, load_data, save_iot
+from utils import preprocess_dataset, save_unsw, save_ctu, load_data #, save_iot
 
 from trainer import Trainer
 import numpy as np
