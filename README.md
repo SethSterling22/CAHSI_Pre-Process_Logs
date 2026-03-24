@@ -83,14 +83,22 @@ rm -rf build && mkdir -p build/release && cd build/release
 # COnfigure and Compile
 cmake ../.. -DCMAKE_BUILD_TYPE=Release
 make Demo
+```
 
+Run MIDAS with the extracted data:
+```bash
 # Execute for one user (Example: User1)
-./Demo \
+./MIDAS/build/release/Demo \
 "../../../Converter/Results/user1_meta.txt" \
 "../../../Converter/Results/user1_data.csv" \
 "../../../Converter/Results/user1_labels.csv" \
 "../../../Converter/Results/score_user1.txt"
 
+```
+Or:
+
+```bash
+./run_midas.sh {User Number}
 ```
 
 ---
@@ -113,6 +121,74 @@ jupyter notebook Analisis.ipynb
 
 
 3. **Comparative Visualization:** Generate a bar chart comparing the performance between the 3 users to identify in which one the model is most effective.
+
+
+---
+
+## ARES: Anomaly Recognition Model For Edge Streams
+
+This repository contains the implementation of **ARES**, an advanced model for detecting anomalies in dynamic graph flows that combines Graph Neural Networks (GNN) with Half-Space Trees (HST).
+
+
+
+### Pre-Requisites
+
+* Python 3.10 or upper.
+
+
+### 1. Crear el entorno virtual
+Use python3 standar `venv`:
+
+```bash
+# Create "ares_env"
+python3 -m venv ares_env
+```
+
+### 2. Activate virtual environment
+
++ In Linux o macOS:
+
+```Bash
+source ares_env/bin/activate
+```
+
++ In Windows:
+```bash
+ares_env\Scripts\activate
+```
+
+### 3. Install base dependencies:
+Once the environment is activated, update pip and install the essential libraries:
+
+```bash
+pip install --upgrade pip
+pip install numpy pandas scikit-learn tqdm matplotlib
+```
+
+### 4. Install PyTorch and PyTorch Geometric (PyG)
+ARES relies critically on graph infrastructure. Install the version compatible with your system (example for CPU):
+
+```bash
+pip install torch torchvision torchaudio
+pip install torch_geometric
+```
+
+#### Installation of PyG auxiliary dependencies
+
+```bash
+pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f [https://data.pyg.org/whl/torch-$(python](https://data.pyg.org/whl/torch-$(python) -c "import torch; print(torch.__version__)").html
+```
+
+#### Application Execution
++ **Data Preparation:** The script will automatically download the datasets (Wikipedia/Reddit) the first time it runs. Make sure you have enough disk space.
+
+#### Train and Evaluate the Model
+To run the base experiment with the Wikipedia dataset, use the following command:
+
+```bash
+python main.py --dataset wikipedia --epochs 50 --use_gnn True --n_trees 25
+```
+
 
 ---
 

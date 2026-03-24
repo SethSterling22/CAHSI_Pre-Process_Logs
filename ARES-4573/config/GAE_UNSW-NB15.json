@@ -1,0 +1,38 @@
+{
+  "dataset": "UNSW-NB15",
+  "dataset_extension": ".csv",
+  "model_name": "GAE",
+  "GPU": 3,
+  "seed": 42,
+
+  "save_files": 0,
+
+  "perc_train": 0.6,
+  "perc_val": 0.2,
+
+  "training": 0,
+  "validation": 0,
+  "update_hst": 0,
+
+  "phi": "minus",
+  "random_start": 0,
+
+  "in_channels": 32,
+  "hidden_channels": 16,
+  "out_channels": 16,
+  "num_layers": 5,
+  "epochs": 5000,
+  "learning_rate": 0.001,
+  "patience": 300,
+
+  "plot_title": "plot_loss/plot_loss_GAE_UNSW-NB15",
+  "model_save_path": "checkpoints/model_GAE_UNSW-NB15",
+
+  "n_trees": 8,
+  "height": 12,
+  "window_size": 8,
+  "thresholds": "0.9298963844776154, 0.9989546239376068, 0.9981458187103271, 0.935474157333374, 0.999626100063324, 0.9668843746185303, 0.999160647392273, 0.9911526441574097, 0.9249862730503082",
+  "weights": "1.0,0.0,0.0",
+  "window_already_seen": 64
+
+}
