@@ -59,16 +59,16 @@ def prepare_user_data(user_path, output_name):
 
 
 # Run for Users
-prepare_user_data('../../WUIL_Logs/User4/', 'user1')
-prepare_user_data('../../WUIL_Logs/User4/', 'user2')
-prepare_user_data('../../WUIL_Logs/User4/', 'user3')
+prepare_user_data('../../WUIL_Logs/User1/', 'user1')
+prepare_user_data('../../WUIL_Logs/User2/', 'user2')
+prepare_user_data('../../WUIL_Logs/User3/', 'user3')
 prepare_user_data('../../WUIL_Logs/User4/', 'user4')
 prepare_user_data('../../WUIL_Logs/User5/', 'user5')
 prepare_user_data('../../WUIL_Logs/User6/', 'user6')
 prepare_user_data('../../WUIL_Logs/User7/', 'user7')
-prepare_user_data('../../WUIL_Logs/User7/', 'user8')
-prepare_user_data('../../WUIL_Logs/User7/', 'user9')
-prepare_user_data('../../WUIL_Logs/User7/', 'user10')
+prepare_user_data('../../WUIL_Logs/User8/', 'user8')
+prepare_user_data('../../WUIL_Logs/User9/', 'user9')
+prepare_user_data('../../WUIL_Logs/User11/', 'user11')
 
 
 ############################### Underscore Version ###############################
