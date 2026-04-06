@@ -70,4 +70,5 @@ def prepare_slade_data(user_path, output_name):
 
 # Run processing for User 8 as requested
 # Adjust the path to your WUIL_Logs directory accordingly
+prepare_slade_data('../../WUIL_Logs/User8/', 'user7')
 prepare_slade_data('../../WUIL_Logs/User8/', 'user8')
