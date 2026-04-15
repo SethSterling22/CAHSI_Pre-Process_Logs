@@ -208,3 +208,7 @@ __marimo__/
 
 Converter/Results/*
 !Converter/Results/.gitkeep
+Converter/Results_ARES/*
+!Converter/Results_ARES/.gitkeep
+Converter/Results_SLADE/*
+!Converter/Results_SLADE/.gitkeep

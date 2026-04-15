@@ -1,0 +1,16 @@
+{
+    "dataset": "User1",
+    "model_save_path": "models/checkpoints/User1",
+    "GPU": -1,
+    "save_files": true,
+    "batch_size": 128,
+    "lr": 0.001,
+    "n_epochs": 10,
+    "in_channels": 8,
+    "hidden_dim": 64,
+    "out_dim": 32,
+    "perc_train": 0.7,
+    "perc_val": 0.15,
+    "perc_test": 0.15,
+    "seed": 42
+}
