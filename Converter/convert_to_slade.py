@@ -68,8 +68,7 @@ def prepare_slade_data(user_path, output_name):
     print(f"Attack Density: {(df_total['label'].sum()/len(slade_final))*100:.2f}%")
     print("-------------------------------------------\n")
 
-
-# Run for Users
-users = ['User1', 'User2', 'User3', 'User4', 'User5', 'User6', 'User7', 'User8', 'User9', 'User11']
-for u in users:
-    prepare_slade_data(f'../../WUIL_Logs/{u}/', u)
+# Run processing for User 8 as requested
+# Adjust the path to your WUIL_Logs directory accordingly
+prepare_slade_data('../../WUIL_Logs/User8/', 'user7')
+prepare_slade_data('../../WUIL_Logs/User8/', 'user8')
