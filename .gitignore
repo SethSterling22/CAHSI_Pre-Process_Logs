@@ -212,3 +212,5 @@ Converter/Results_ARES/*
 !Converter/Results_ARES/.gitkeep
 Converter/Results_SLADE/*
 !Converter/Results_SLADE/.gitkeep
+ARES-4573/data/*
+output/*
