@@ -57,7 +57,7 @@ cat <<EOF > "config/config_${USER_FOLDER}.json"
 {
     "dataset": "${USER_FOLDER}",
     "model_save_path": "models/checkpoints/${USER_FOLDER}",
-    "GPU": -1,
+    "GPU": ${GPU_INDEX},
     "save_files": false,
     "batch_size": 64,
     "lr": 0.001,
