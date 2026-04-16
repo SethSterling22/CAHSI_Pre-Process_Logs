@@ -63,7 +63,7 @@ cat <<EOF > "config/config_${USER_FOLDER}.json"
     "lr": 0.001,
     "n_epochs": 10,
     "in_channels": 8,
-    "hidden_dim": 64,
+    "hidden_dim": 128,
     "out_dim": 32,
     "perc_train": 0.7,
     "perc_val": 0.15,

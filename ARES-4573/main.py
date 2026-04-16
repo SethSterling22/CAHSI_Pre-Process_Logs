@@ -17,6 +17,13 @@ os.environ['CUDA_VISIBLE_DEVICES']= "{}".format(str(params.GPU))
 
 import torch
 
+if params.GPU >= 0 and torch.cuda.is_available():
+    device = torch.device(f'cuda:{params.GPU}')
+    print(f"🚀 Forzando ejecución en GPU: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device('cpu')
+    print("⚠️ Usando CPU (GPU no detectada o desactivada)")
+
 from pipeline import pipeline_validation, pipeline_test
 from utils import preprocess_dataset, save_unsw, save_ctu, load_data #, save_iot
 
