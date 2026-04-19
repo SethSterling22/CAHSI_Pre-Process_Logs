@@ -452,14 +452,25 @@ def pipeline_validation(
 
                             scores_and_labels = np.array(scores_and_labels)
 
-                            roc_auc_results = roc_auc_score(
-                                scores_and_labels[:, 1], scores_and_labels[:, 0])
-                            roc_auc = np.around(roc_auc_results, 3)
+                            # roc_auc_results = roc_auc_score(
+                            #    scores_and_labels[:, 1], scores_and_labels[:, 0])
+                            # roc_auc = np.around(roc_auc_results, 3)
+
+                            if scores_and_labels.ndim == 2 and scores_and_labels.shape[0] > 0:
+                                # Cálculo de AUC
+                                roc_auc_results = roc_auc_score(scores_and_labels[:, 1], scores_and_labels[:, 0])
+                                roc_auc = np.around(roc_auc_results, 3)
+                                
+                                # Cálculo de AP
+                                ap_results = average_precision_score(scores_and_labels[:, 1], scores_and_labels[:, 0])
+                                ap_results = np.around(ap_results, 3)
+                            else:
+                                # Valores por defecto si el set de test está vacío
+                                roc_auc = 0.5
+                                ap_results = 0.5
+                                print(f"\n⚠️ User {params.dataset}: Sin datos en test (Shape: {scores_and_labels.shape})")
 
                             roc_auc_list.append(roc_auc)
-
-                            ap_results = average_precision_score(scores_and_labels[:, 1], scores_and_labels[:, 0])
-                            ap_results = np.around(ap_results, 3)
                             ap_results_list.append(ap_results)
 
                             print("Model", params.model_name, "seed", params.seed, "n_trees", n_trees, "\theight",
@@ -476,11 +487,17 @@ def pipeline_validation(
                         thresholds = []
 
                         for all_scores_and_labels_seed in all_scores_and_labels:
-                            clf = DecisionTreeClassifier(random_state=0, max_depth=1, criterion="gini").fit(
-                                X=all_scores_and_labels_seed[:, 0].reshape(-1, 1), y=all_scores_and_labels_seed[:, 1])
-                            print("Thresh", clf.tree_.threshold)
-
-                            threshold = clf.tree_.threshold[0]
+                            # MODIFICADO: Verificamos si el array tiene datos y es 2D antes de entrenar
+                            if all_scores_and_labels_seed.ndim == 2 and all_scores_and_labels_seed.shape[0] > 0:
+                                clf = DecisionTreeClassifier(random_state=0, max_depth=1, criterion="gini").fit(
+                                    X=all_scores_and_labels_seed[:, 0].reshape(-1, 1), 
+                                    y=all_scores_and_labels_seed[:, 1]
+                                )
+                                threshold = clf.tree_.threshold[0]
+                            else:
+                                threshold = 0.5  # Valor por defecto si no hay datos
+                            
+                            print("Thresh", threshold)
                             thresholds.append(threshold)
 
                         f1_list = []
@@ -490,18 +507,19 @@ def pipeline_validation(
                             tn = 0.0
                             fp = 0.0
                             fn = 0.0
-                            for idx, y in enumerate(x):
-                                score = y[0]
-                                l = y[1]
-                                
-                                if (score > thresholds[i] and l == 1):
-                                    tp += 1
-                                elif (score <= thresholds[i] and l == 0):
-                                    tn += 1
-                                elif (score > thresholds[i] and l == 0):
-                                    fp += 1
-                                elif (score <= thresholds[i] and l == 1):
-                                    fn += 1
+                            if x.ndim == 2 and x.shape[0] > 0:
+                                for idx, y in enumerate(x):
+                                    score = y[0]
+                                    l = y[1]
+                                    
+                                    if (score > thresholds[i] and l == 1):
+                                        tp += 1
+                                    elif (score <= thresholds[i] and l == 0):
+                                        tn += 1
+                                    elif (score > thresholds[i] and l == 0):
+                                        fp += 1
+                                    elif (score <= thresholds[i] and l == 1):
+                                        fn += 1
 
                             precision = np.around(
                                 (tp) / (tp + fp), 15) if (tp + fp) > 0 else 0

@@ -95,16 +95,14 @@ def preprocess_dataset(params):
         w_train['i'] = np.arange(w_train.shape[0])
         w_train_dict = w_train.set_index(["s", "d"]).to_dict()['i']
 
-        train_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(
-            w_train[['s', 'd']].to_numpy()).t().contiguous(), edge_dict=w_train_dict).cpu()
+        train_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(w_train[['s', 'd']].to_numpy().astype(np.int64)).t().contiguous().long(), edge_dict=w_train_dict).cpu()
 
         w_val = val[['s', 'd']].value_counts()
         w_val = w_val.reset_index()
         w_val['i'] = np.arange(w_val.shape[0])
         w_val_dict = w_val.set_index(["s", "d"]).to_dict()['i']
 
-        val_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(
-            w_val[['s', 'd']].to_numpy()).t().contiguous(), edge_dict=w_val_dict).cpu()
+        val_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(w_train[['s', 'd']].to_numpy().astype(np.int64)).t().contiguous().long(), edge_dict=w_val_dict).cpu()
 
 
         return train_graph, val_graph, train, val, test, val_and_test, df
@@ -253,16 +251,14 @@ def load_data(params):
     w_train['i'] = np.arange(w_train.shape[0])
     w_train_dict = w_train.set_index(["s", "d"]).to_dict()['i']
 
-    train_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(
-        w_train[['s', 'd']].to_numpy()).t().contiguous(), edge_dict=w_train_dict).cpu()
+    train_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(w_train[['s', 'd']].to_numpy().astype(np.int64)).t().contiguous().long(), edge_dict=w_train_dict).cpu()
 
     w_val = val[['s', 'd']].value_counts()
     w_val = w_val.reset_index()
     w_val['i'] = np.arange(w_val.shape[0])
     w_val_dict = w_val.set_index(["s", "d"]).to_dict()['i']
 
-    val_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(
-        w_val[['s', 'd']].to_numpy()).t().contiguous(), edge_dict=w_val_dict).cpu()
+    val_graph = torch_geometric.data.Data(x=x, edge_index=torch.LongTensor(w_train[['s', 'd']].to_numpy().astype(np.int64)).t().contiguous().long(), edge_dict=w_val_dict).cpu()
 
     return train_graph, val_graph, train, val, test, val_and_test, df
 

@@ -11,7 +11,7 @@ USER_FOLDER="User${USER_NUM}"
 # --- CONFIGURACIÓN DE SUPERVIVENCIA ---
 MAX_ENTRIES=10000  # Bajamos a 150k para no saturar la RAM
 THREADS=4           # Solo 2 hilos para dejarle todo el aire al sistema
-GPU_INDEX=0
+GPU_INDEX=-1
 # --------------------------------------
 
 BASE_PROJ_DIR=$(cd "$(dirname "$0")" && pwd)

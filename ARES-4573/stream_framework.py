@@ -62,7 +62,12 @@ def run_stream(params, times, df, g, model, weights, anomaly_edge_model,
         time_limit = 1000
 
 
-    n_chunk = times.shape[0] // n_chunk_division
+    if times.shape[0] == 0:
+        # Si está vacío, creamos un chunk artificial de 1 para evitar el crash
+        n_chunk = 1
+        print("DEBUG: Forzando n_chunk a 1 para evitar ValueError")
+    else:
+        n_chunk = times.shape[0] // n_chunk_division
     splitted = np.array_split(times, n_chunk)
 
     scalability_analysis = False

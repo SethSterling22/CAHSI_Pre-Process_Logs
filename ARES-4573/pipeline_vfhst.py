@@ -432,7 +432,7 @@ class Pipeline(base.Estimator):
         for step in self.steps.values():
             # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
             # data from being learned by the subsequent parts of the pipeline.
-            if utils.inspect.ischildobject(obj=step, class_name="AnomalyFilter"):
+            if any(base.__name__ == "AnomalyFilter" for base in type(step).__mro__):
                 if step._supervised:
                     step.learn_one(x, y)
                     score = step.score_one(x, y)
