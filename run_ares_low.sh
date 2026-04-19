@@ -1,7 +1,12 @@
 #!/bin/bash
 
+# =================================================================
+# ARES SAFE RUNNER - PRIORIDAD BAJA & PROTECCIÓN DE DATOS
+# Optimizado para RTX 3050 | i5-12500H
+# =================================================================
+
 if [ -z "$1" ]; then
-    echo "Uso: ./run_ares_low.sh <number>"
+    echo "Uso: ./run_ares_safe.sh <number>"
     exit 1
 fi
 
@@ -15,29 +20,47 @@ GPU_INDEX=0
 
 BASE_PROJ_DIR=$(cd "$(dirname "$0")" && pwd)
 ARES_DIR="${BASE_PROJ_DIR}/ARES-4573"
-# Definimos las rutas ABSOLUTAS para evitar confusiones
 ORIGIN_DATA="${BASE_PROJ_DIR}/Converter/Results_ARES/${USER_FOLDER}_ares.csv"
 ORIGIN_LABELS="${BASE_PROJ_DIR}/Converter/Results/user${USER_NUM}_labels.csv"
 TARGET_DIR="${ARES_DIR}/data/processed/${USER_FOLDER}"
 LOG_DIR="${BASE_PROJ_DIR}/output/${USER_FOLDER}_ares"
 
+# Crear directorios necesarios
 mkdir -p "$TARGET_DIR" "$LOG_DIR"
+mkdir -p "${ARES_DIR}/models/checkpoints/${USER_FOLDER}"
 
 echo "-------------------------------------------------------"
-echo "🧹 Limpiando y copiando datos de forma segura..."
+echo "🛡️  PASO 1: PROTECCIÓN Y COPIA DE SEGURIDAD"
+echo "-------------------------------------------------------"
 
-# Verificamos que el archivo original no esté vacío antes de proceder
+# Verificamos existencia y tamaño del original
 if [ ! -s "$ORIGIN_DATA" ]; then
-    echo "❌ ERROR: El archivo de origen $ORIGIN_DATA no existe o está vacío."
-    echo "Por favor, regenera los logs con tu script de pre-procesamiento."
+    echo "❌ ERROR: $ORIGIN_DATA no existe o está vacío (0 bytes)."
+    echo "Regenera el CSV antes de continuar."
     exit 1
 fi
 
-# Limpiamos headers hacia una ruta TOTALMENTE distinta
-sed '1d' "$ORIGIN_DATA" > "${TARGET_DIR}/processed.csv"
-sed '1d' "$ORIGIN_LABELS" > "${TARGET_DIR}/ground_truth.csv"
+# Copia física a carpeta de destino para aislar el proceso
+echo "Copiando archivos a carpeta de trabajo..."
+cp "$ORIGIN_DATA" "${TARGET_DIR}/temp_raw.csv"
+cp "$ORIGIN_LABELS" "${TARGET_DIR}/temp_labels.csv"
 
-echo "📄 Generando configuración JSON..."
+# Limpieza de headers sobre las COPIAS
+echo "Limpiando encabezados..."
+sed '1d' "${TARGET_DIR}/temp_raw.csv" > "${TARGET_DIR}/processed.csv"
+sed '1d' "${TARGET_DIR}/temp_labels.csv" > "${TARGET_DIR}/ground_truth.csv"
+
+# Borrar archivos temporales intermedios
+rm "${TARGET_DIR}/temp_raw.csv" "${TARGET_DIR}/temp_labels.csv"
+
+# Verificación de integridad final
+FINAL_COUNT=$(wc -l < "${TARGET_DIR}/processed.csv")
+echo "✅ Datos listos: $FINAL_COUNT registros para procesar."
+
+echo "-------------------------------------------------------"
+echo "📄 PASO 2: GENERACIÓN DE CONFIGURACIÓN JSON"
+echo "-------------------------------------------------------"
+
 cat <<'EOF' > "${ARES_DIR}/config/config_${USER_FOLDER}.json"
 {
     "dataset": "REPLACE_USER",
@@ -61,15 +84,19 @@ sed -i "s/REPLACE_USER/${USER_FOLDER}/g" "${ARES_DIR}/config/config_${USER_FOLDE
 sed -i "s/REPLACE_GPU/${GPU_INDEX}/g" "${ARES_DIR}/config/config_${USER_FOLDER}.json"
 
 echo "-------------------------------------------------------"
-echo "🚀 Lanzando ARES (Prioridad Baja) con 295k registros..."
+echo "🧊 PASO 3: LANZAMIENTO (NICE + IONICE)"
 echo "-------------------------------------------------------"
 
 cd "$ARES_DIR" || exit
 export OMP_NUM_THREADS=$THREADS
 export MKL_NUM_THREADS=$THREADS
 
-# Ejecución en segundo plano
+# Lanzamos en segundo plano con prioridad mínima
 nice -n 19 ionice -c 3 python3 main.py "config/config_${USER_FOLDER}.json" > "${LOG_DIR}/results.txt" 2>&1 &
 
-echo "✅ PID: $!"
-echo "📈 Monitor: tail -f ${LOG_DIR}/results.txt"
+PID=$!
+
+echo "🚀 Proceso ARES corriendo con PID: $PID"
+echo "🖥️  Tu Nitro está libre para otras tareas."
+echo "📈 Sigue el progreso con: tail -f ${LOG_DIR}/results.txt"
+echo "-------------------------------------------------------"
