@@ -140,9 +140,16 @@ celerybeat.pid
 .venv
 env/
 venv/
+ARES-4573/ares_env/
+ARES-4573/ares_venv/
 ENV/
 env.bak/
 venv.bak/
+ares_env/
+bin/
+lib/
+share/
+pyvenv.cfg
 
 # Spyder project settings
 .spyderproject
@@ -214,3 +221,13 @@ Converter/Results_SLADE/*
 !Converter/Results_SLADE/.gitkeep
 ARES-4573/data/*
 output/*
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs de ARES and temporary files
+output/
+data/processed/
+models/checkpoints/
+*.txt
