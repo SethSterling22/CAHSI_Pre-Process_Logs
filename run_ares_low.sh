@@ -9,7 +9,7 @@ USER_NUM=$1
 USER_FOLDER="User${USER_NUM}"
 
 # --- CONFIGURACIÓN DE SUPERVIVENCIA ---
-MAX_ENTRIES=150000  # Bajamos a 150k para no saturar la RAM
+MAX_ENTRIES=50000  # Bajamos a 150k para no saturar la RAM
 THREADS=2           # Solo 2 hilos para dejarle todo el aire al sistema
 GPU_INDEX=0
 # --------------------------------------
@@ -47,8 +47,8 @@ cat <<'EOF' > "${ARES_DIR}/config/config_${USER_FOLDER}.json"
     "lr": 0.001,
     "n_epochs": 5,
     "in_channels": 8,
-    "hidden_dim": 32,
-    "out_dim": 16,
+    "hidden_dim": 16,
+    "out_dim": 8,
     "perc_train": 0.8,
     "perc_val": 0.1,
     "perc_test": 0.1,
@@ -65,7 +65,7 @@ export OMP_NUM_THREADS=$THREADS
 export MKL_NUM_THREADS=$THREADS
 export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
 
-nice -n 19 ionice -c 3 python3 main.py "config/config_${USER_FOLDER}.json" > "${LOG_DIR}/results.txt" 2>&1 &
+nice -n 19 ionice -c 3 python3 -u main.py "config/config_${USER_FOLDER}.json" > "${LOG_DIR}/results.txt" 2>&1 &
 
 echo "✅ PID: $!"
 echo "📈 Sigue el log: tail -f ${LOG_DIR}/results.txt"
