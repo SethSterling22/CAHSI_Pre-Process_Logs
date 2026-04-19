@@ -9,8 +9,8 @@ USER_NUM=$1
 USER_FOLDER="User${USER_NUM}"
 
 # --- CONFIGURACIÓN DE SUPERVIVENCIA ---
-MAX_ENTRIES=25000  # Bajamos a 150k para no saturar la RAM
-THREADS=1           # Solo 2 hilos para dejarle todo el aire al sistema
+MAX_ENTRIES=10000  # Bajamos a 150k para no saturar la RAM
+THREADS=4           # Solo 2 hilos para dejarle todo el aire al sistema
 GPU_INDEX=0
 # --------------------------------------
 
@@ -43,9 +43,9 @@ cat <<'EOF' > "${ARES_DIR}/config/config_${USER_FOLDER}.json"
     "model_save_path": "models/checkpoints/REPLACE_USER",
     "GPU": REPLACE_GPU,
     "save_files": false,
-    "batch_size": 16, 
+    "batch_size": 8, 
     "lr": 0.001,
-    "n_epochs": 5,
+    "n_epochs": 3,
     "in_channels": 8,
     "hidden_dim": 8,    
     "out_dim": 4,       
