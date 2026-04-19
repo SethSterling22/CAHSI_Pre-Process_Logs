@@ -1,6 +1,0 @@
-#!/home/seth/CAHSI/CAHSI_Pre-Process_Logs/ARES-4573/ares_env/bin/python3
-import sys
-from torch.distributed.run import main
-if __name__ == '__main__':
-    sys.argv[0] = sys.argv[0].removesuffix('.exe')
-    sys.exit(main())
