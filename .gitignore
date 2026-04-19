@@ -231,3 +231,15 @@ output/
 data/processed/
 models/checkpoints/
 *.txt
+
+# Datos
+*.csv
+*.log
+
+# Modelos y Checkpoints
+*.pt
+ARES-4573/models/checkpoints/
+
+# Entornos virtuales
+venv/
+.venv/
