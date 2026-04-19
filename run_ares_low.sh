@@ -14,7 +14,7 @@ USER_NUM=$1
 USER_FOLDER="User${USER_NUM}"
 
 # --- CONFIGURACIÓN DE RECURSOS (Edita aquí) ---
-MAX_ENTRIES=20000   # Cantidad de filas a procesar (balanceado para 4GB VRAM)
+MAX_ENTRIES=50000   # Cantidad de filas a procesar (balanceado para 4GB VRAM)
 THREADS=4           # Limita a 4 hilos de CPU (de tus 16 disponibles)
 GPU_INDEX=0         # Índice de tu RTX 3050
 # ----------------------------------------------
@@ -44,15 +44,15 @@ cat <<'EOF' > "config/config_${USER_FOLDER}.json"
     "model_save_path": "models/checkpoints/REPLACE_USER",
     "GPU": REPLACE_GPU,
     "save_files": true,
-    "batch_size": 256,
+    "batch_size": 128,
     "lr": 0.001,
     "n_epochs": 10,
     "in_channels": 8,
     "hidden_dim": 64,
     "out_dim": 32,
-    "perc_train": 0.7,
-    "perc_val": 0.15,
-    "perc_test": 0.15,
+    "perc_train": 0.6,
+    "perc_val": 0.2,
+    "perc_test": 0.2,
     "seed": 42
 }
 EOF
