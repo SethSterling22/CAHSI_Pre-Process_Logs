@@ -1,0 +1,21 @@
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+
+# Archivos de compilación de C++ (CMake)
+build/
+bin/
+*.o
+*.d
+*.make
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos temporales de datos
+temp/
+*.txt
+*.csv
+!requirements.txt  # No ignorar el archivo de dependencias
