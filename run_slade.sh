@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # =================================================================
-# SLADE Execution Automator
-# Usage: ./run_slade.sh <user_number>
+# SLADE Execution Automator (CPU Optimized & Re-indexing)
 # =================================================================
 
-# 1. Check for the user number argument
 if [ -z "$1" ]; then
     echo "Error: No user number provided."
     echo "Usage: ./run_slade.sh <user_number>"
@@ -13,43 +11,64 @@ if [ -z "$1" ]; then
 fi
 
 USER_NUM=$1
-USER_ID="user${USER_NUM}"
+USER_ID="User${USER_NUM}"
 
-# 2. Define Relative Paths
-# Adjust BASE_RESULTS if your directory structure is different
+# 1. Rutas
 BASE_RESULTS="./Converter/Results_SLADE"
 INPUT_CSV="${BASE_RESULTS}/${USER_ID}_slade.csv"
-OUTPUT_DIR="./Converter/Results/output/${USER_ID}"
+OUTPUT_DIR="${BASE_RESULTS}/output/${USER_ID}"
+RESULTS_FILE="${OUTPUT_DIR}/results.txt"
 
-# 3. Validation: Check if the processed SLADE file exists
+# 2. Validación
 if [ ! -f "$INPUT_CSV" ]; then
     echo "Error: Input file $INPUT_CSV not found."
-    echo "Ensure you ran convert_to_slade.py first."
     exit 1
 fi
 
-# 4. Create Output Directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"
+mkdir -p SLADE/data
 
 echo "-------------------------------------------------------"
-echo "Starting SLADE Evaluation for: ${USER_ID}"
-echo "Input: ${INPUT_CSV}"
+echo "🚀 Iniciando preparación de datos para: ${USER_ID}"
 echo "-------------------------------------------------------"
 
-# 5. Execute SLADE
-python3 SLADE/SLADE_main.py \
-    --data "$INPUT_CSV" \
-    --output "${OUTPUT_DIR}/results.txt" \
-    --user_id "$USER_ID"
+# 3. Normalización de Datos (EVITA EL BLOQUEO DEL PC)
+# Copiamos el archivo a la carpeta de SLADE
+cp "$INPUT_CSV" "SLADE/data/${USER_ID}.csv"
 
-# 6. Final Status
+cd SLADE
+
+# Ejecutamos el pre-procesador oficial para re-indexar IDs de 10 dígitos a índices pequeños
+# Esto es CRÍTICO para no agotar la RAM.
+echo "⚙️ Re-indexando nodos (paso necesario para IDs grandes)..."
+python3 utils/preprocess_data.py --data "${USER_ID}"
+
+echo "📊 Datos normalizados correctamente en SLADE/data/ml_${USER_ID}.csv"
+
+# 4. Ejecución en CPU
+# --gpu -1 suele forzar CPU en muchos scripts de PyTorch, 
+# pero nos aseguramos de que el sistema sepa que no hay CUDA.
+echo "🚀 Lanzando SLADE en modo CPU..."
+
+export CUDA_VISIBLE_DEVICES="" # Oculta GPUs para forzar CPU
+
+python3 SLADE_main.py \
+    --data "${USER_ID}" \
+    --gpu -1 \
+    --n_epoch 20 \
+    --bs 64 > "../${RESULTS_FILE}" 2>&1
+
+# Volvemos a la raíz
+cd ..
+
+# 5. Verificación de salida
 if [ $? -eq 0 ]; then
     echo "-------------------------------------------------------"
-    echo "✅ SLADE execution for ${USER_ID} completed successfully."
-    echo "Results saved in: ${OUTPUT_DIR}/results.txt"
+    echo "✅ SLADE completado con éxito."
+    echo "📊 Resultados guardados en: $RESULTS_FILE"
+    tail -n 10 "$RESULTS_FILE"
     echo "-------------------------------------------------------"
 else
-    echo "❌ Error: SLADE execution failed for ${USER_ID}."
+    echo "❌ Error: SLADE falló. Revisa el log en $RESULTS_FILE"
     exit 1
 fi
-
