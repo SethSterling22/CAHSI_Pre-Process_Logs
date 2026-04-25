@@ -61,6 +61,7 @@ python3 SLADE_main.py \
     --srf 1.0 \
     --drf 1.0 \
     --memory_dim 512 \
+    --n_degree 20 \
     --training_ratio 0.60 > "../${RESULTS_FILE}" 2>&1 # Add more bs when run with GPU (512, 1024)
 
 # Volvemos a la raíz
