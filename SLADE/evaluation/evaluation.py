@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 import torch
 from sklearn.metrics import average_precision_score, roc_auc_score
@@ -56,9 +55,13 @@ def eval_anomaly_node_detection(model, data, batch_size, n_neighbors, device,
             else: # default
                 pred_score[s_idx: e_idx] = (-(drift_score).reshape(-1).cpu().numpy()-(positive_memory_score).reshape(-1).cpu().numpy() + 2)/4
                 
-        auc_roc = roc_auc_score(data.labels, pred_score)
-        return auc_roc, pred_score, _
-        
-      
-          
+        # Validación de etiquetas para evitar error de AUC con una sola clase
+        y_true = data.labels
+        unique_classes = np.unique(y_true)
 
+        if len(unique_classes) < 2:
+            auc_roc = np.nan
+        else:
+            auc_roc = roc_auc_score(y_true, pred_score)
+
+        return auc_roc, pred_score, _
