@@ -55,13 +55,13 @@ export CUDA_VISIBLE_DEVICES="" # Oculta GPUs para forzar CPU
 python3 SLADE_main.py \
     --data "${USER_ID}" \
     --gpu 0 \
-    --n_epoch 50 \
-    --bs 512 \
+    --n_epoch 10 \
+    --bs 64 \
     --lr 5e-5 \
-    --srf 1.0 \
-    --drf 1.0 \
-    --memory_dim 512 \
-    --n_degree 20 \
+    --memory_dim 256 \
+    --n_degree 10 \
+    --srf 0.5 \
+    --drf 0.5 \
     --training_ratio 0.60 > "../${RESULTS_FILE}" 2>&1 # Add more bs when run with GPU (512, 1024)
 
 # Volvemos a la raíz
