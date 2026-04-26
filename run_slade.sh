@@ -49,13 +49,6 @@ python3 utils/preprocess_data.py --data "${USER_ID}"
 
 echo "📊 Datos normalizados correctamente en SLADE/data/ml_${USER_ID}.csv"
 
-# 4. Ejecución en CPU
-# --gpu -1 suele forzar CPU en muchos scripts de PyTorch, 
-# pero nos aseguramos de que el sistema sepa que no hay CUDA.
-echo "🚀 Lanzando SLADE en modo CPU..."
-
-export CUDA_VISIBLE_DEVICES="" # Oculta GPUs para forzar CPU
-
 # Get number of lines in the CSV
 LINES=$(wc -l < "$INPUT_CSV" | tr -d ' ')
 
@@ -70,7 +63,7 @@ else
     EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30
 fi
 
-# Run SLADE with dynamic parameters
+# Run SLADE with dynamic parameters (Change gpu to -1 if you have not gpu)
 python3 SLADE_main.py \
     --data "${USER_ID}" \
     --gpu 0 \
