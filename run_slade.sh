@@ -53,7 +53,7 @@ echo "🚀 Lanzando SLADE en modo CPU..."
 export CUDA_VISIBLE_DEVICES="" # Oculta GPUs para forzar CPU
 
 # Get number of lines in the CSV
-LINES=$(wc -l < "$INPUT_CSV")
+LINES=$(wc -l < "$INPUT_CSV" | tr -d ' ')
 
 if [ "$LINES" -lt 5000 ]; then
     # Small Log Config
