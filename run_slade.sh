@@ -13,9 +13,13 @@ fi
 USER_NUM=$1
 USER_ID="User${USER_NUM}"
 
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+
 # 1. Rutas
 BASE_RESULTS="./Converter/Results_SLADE"
-INPUT_CSV="${BASE_RESULTS}/${USER_ID}_slade.csv"
+# INPUT_CSV="${BASE_RESULTS}/${USER_ID}_slade.csv"
+INPUT_CSV="${SCRIPT_DIR}/Converter/Results_SLADE/${USER_ID}_slade.csv"
+
 OUTPUT_DIR="${BASE_RESULTS}/output/${USER_ID}"
 RESULTS_FILE="${OUTPUT_DIR}/results.txt"
 
