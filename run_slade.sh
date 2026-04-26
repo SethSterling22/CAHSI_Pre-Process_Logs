@@ -52,14 +52,29 @@ echo "🚀 Lanzando SLADE en modo CPU..."
 
 export CUDA_VISIBLE_DEVICES="" # Oculta GPUs para forzar CPU
 
+# Get number of lines in the CSV
+LINES=$(wc -l < "$INPUT_CSV")
+
+if [ "$LINES" -lt 5000 ]; then
+    # Small Log Config
+    EPOCHS=10; BS=32; LR="1e-3"; MEM=128; DEG=10
+elif [ "$LINES" -lt 50000 ]; then
+    # Medium Log Config
+    EPOCHS=25; BS=128; LR="5e-4"; MEM=256; DEG=20
+else
+    # Large Log Config
+    EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30
+fi
+
+# Run SLADE with dynamic parameters
 python3 SLADE_main.py \
     --data "${USER_ID}" \
     --gpu 0 \
-    --n_epoch 10 \
-    --bs 64 \
-    --lr 5e-5 \
-    --memory_dim 256 \
-    --n_degree 10 \
+    --n_epoch $EPOCHS \
+    --bs $BS \
+    --lr $LR \
+    --memory_dim $MEM \
+    --n_degree $DEG \
     --srf 0.5 \
     --drf 0.5 \
     --training_ratio 0.60 > "../${RESULTS_FILE}" 2>&1 # Add more bs when run with GPU (512, 1024)

@@ -136,3 +136,12 @@ optional arguments:
   --only_rec_score             Whether to use all losses and only Reconstruction Score
   --test_inference_time        Whether to measure detection time (with an evolving CTDG)  
 ```
+## Config ./run_slade depending on the user
+
+Adjusting hyperparameters based on log size is essential to balance **model capacity** with **data density**, ensuring scientific validity. Small datasets are highly susceptible to **overfitting**, where the model memorizes specific noise instead of learning generalizable patterns; reducing epochs and complexity prevents this "memorization" trap. Conversely, large datasets require more stable learning via smaller learning rates and larger batch sizes to capture complex, long-term temporal dependencies without overshooting the optimal solution. This approach ensures that your comparison with MIDAS is rigorous, as it optimizes SLADE to reach its maximum potential for each specific user profile rather than applying a "one-size-fits-all" configuration that would unfairly disadvantage the model in extreme cases.
+
+| Log Category | Row Count ($N$) | Epochs | Batch Size | Learning Rate | Memory Dim | Neighbor Degree | Strategy Goal |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Small** | $N < 5,000$ | $5 - 10$ | $32$ | $1 \times 10^{-3}$ | $128$ | $5 - 10$ | Prevent Overfitting |
+| **Medium** | $5,000 \le N < 50,000$ | $20 - 30$ | $128$ | $5 \times 10^{-4}$ | $256$ | $20$ | Balance Convergence |
+| **Large** | $N \ge 50,000$ | $50 - 100$ | $512$ | $1 \times 10^{-5}$ | $512$ | $30$ | Stabilize Learning |
