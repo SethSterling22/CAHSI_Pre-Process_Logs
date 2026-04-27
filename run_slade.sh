@@ -54,13 +54,13 @@ LINES=$(wc -l < "$INPUT_CSV" | tr -d ' ')
 
 if [ "$LINES" -lt 5000 ]; then
     # Small Log Config
-    EPOCHS=10; BS=32; LR="1e-3"; MEM=128; DEG=10
+    EPOCHS=10; BS=32; LR="1e-3"; MEM=128; DEG=10; RAT=0.40
 elif [ "$LINES" -lt 50000 ]; then
     # Medium Log Config
-    EPOCHS=25; BS=128; LR="5e-4"; MEM=256; DEG=20
+    EPOCHS=25; BS=128; LR="5e-4"; MEM=256; DEG=20; RAT=0.60
 else
     # Large Log Config
-    EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30
+    EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30; RAT=0.70
 fi
 
 # Run SLADE with dynamic parameters (Change gpu to -1 if you have not gpu)
@@ -72,9 +72,9 @@ python3 SLADE_main.py \
     --lr $LR \
     --memory_dim $MEM \
     --n_degree $DEG \
-    --srf 0.5 \
-    --drf 0.5 \
-    --training_ratio 0.60 > "../${RESULTS_FILE}" 2>&1 # Add more bs when run with GPU (512, 1024)
+    --srf 1.0 \
+    --drf 1.0 \
+    --training_ratio $RAT > "../${RESULTS_FILE}" 2>&1 # Add more bs when run with GPU (512, 1024)
 
 # Volvemos a la raíz
 cd ..
