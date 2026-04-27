@@ -52,15 +52,15 @@ echo "📊 Datos normalizados correctamente en SLADE/data/ml_${USER_ID}.csv"
 # Get number of lines in the CSV
 LINES=$(wc -l < "$INPUT_CSV" | tr -d ' ')
 
-if [ "$LINES" -lt 5000 ]; then
+if [ "$LINES" -lt 30000 ]; then
     # Small Log Config
-    EPOCHS=10; BS=32; LR="1e-3"; MEM=128; DEG=10; RAT=0.40
-elif [ "$LINES" -lt 50000 ]; then
-    # Medium Log Config
-    EPOCHS=25; BS=128; LR="5e-4"; MEM=256; DEG=20; RAT=0.60
+    EPOCHS=15; BS=64; LR="1e-3"; MEM=128; DEG=10; RAT=0.40
+elif [ "$LINES" -lt 150000 ]; then
+    # Medium Log
+    EPOCHS=30; BS=256; LR="5e-4"; MEM=256; DEG=20; RAT=0.60
 else
-    # Large Log Config
-    EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30; RAT=0.70
+    # Big Log
+    EPOCHS=50; BS=512; LR="1e-5"; MEM=512; DEG=30; RAT=0.75
 fi
 
 # Run SLADE with dynamic parameters (Change gpu to -1 if you have not gpu)
